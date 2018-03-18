@@ -17,19 +17,17 @@ use Yii;
 class Brand extends \yii\db\ActiveRecord
 {
     //属性
-    public $img;
     public $code;
     public function rules()
     {
         return [
-            [['name','status','sort'],'required'],
-            [['img'],'image','extensions' =>['gif','jpg','png'],"skipOnEmpty" => true],
-            [['detail'],'safe'],
+            [['name','status','sort','logo'],'required'],
+            [['detail','recycle'],'safe'],
             [['sort'],'integer'],
             [['code'],'captcha','captchaAction' => "brand/code"],
+            [['sort','name'],'unique']
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -42,6 +40,7 @@ class Brand extends \yii\db\ActiveRecord
             'sort' => '品牌排序',
             'status' => '品牌状态',
             'detail' => '品牌简介',
+            'recycle'=>'删除状态'
         ];
     }
 }
