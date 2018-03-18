@@ -70,7 +70,7 @@ class GoodsCateController extends \yii\web\Controller
     public function actionEdit($id){
        $cate = GoodsCate::findOne($id);
         //找到全部（是数组用asArray）
-        $cateArr = GoodsCate::find()->asArray()->all();
+        $cateArr = GoodsCate::find()->where(['and',['!=','parent_id',$cate->parent_id],["!=",'tree',$cate->tree]])->asArray()->all();
         $cateArr[]=["id"=>0,"name"=>"一级分类",'parent_id'=>0];
         $cateJson =\yii\helpers\Json::encode($cateArr);
         $rst = new Request();
