@@ -75,6 +75,6 @@ class GoodsCate extends \yii\db\ActiveRecord
     }
     //得到层级结构
     public function getNameText(){
-    return str_repeat("┄╟",$this->depth).$this->name;
+    return str_repeat("┈",$this->depth*4).$this->name;
     }
 }

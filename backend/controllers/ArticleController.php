@@ -11,7 +11,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use yii\captcha\CaptchaAction;
 
-class ArticleController extends \yii\web\Controller
+class ArticleController extends CommenController
 {
     /**
      * 文章列表显示
@@ -126,44 +126,9 @@ class ArticleController extends \yii\web\Controller
         return $this->render('edit',compact('article','oneArr','content'));
     }
 
-    /**
-     * 时间注入行为
-     * @return array
-     */
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => TimestampBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_time', 'update_time'],
-                    ActiveRecord::EVENT_BEFORE_UPDATE => ['update_time'],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * 验证码和富文本框
-     * @return array
-     */
-    public function actions()
-    {
-        return [
-            'code'=>[
-                'class'=>CaptchaAction::className(),
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme':null,
-                'maxLength' => 3,
-                'minLength' => 3,
-            ],
-            'upload' => [
-                'class' => 'kucha\ueditor\UEditorAction',
-                'config' => [
-                    "imageUrlPrefix"  => "http://www.baidu.com",//图片访问路径前缀
-                    "imagePathFormat" => "/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}", //上传保存路径
-                    "imageRoot" => \Yii::getAlias("@web"),
-            ],
-        ],
-        ];
+    public function actionDel($id){
+        if (Article::findOne($id)->delete()) {
+            return $this->redirect('index');
+        }
     }
 }

@@ -29,7 +29,6 @@ class ArticleCategory extends \yii\db\ActiveRecord
                 [['sort','name'],'unique']
         ];
     }
-
     /**
      * @inheritdoc
      */

@@ -1,9 +1,10 @@
 <?php
+/** @var $this \yii\web\View */
 $form = \yii\bootstrap\ActiveForm::begin();
 
 echo $form->field($cate,'name');
 echo $form->field($cate,'detail')->textarea();
-echo $form->field($cate,'parent_id')->textInput(['value'=>0]);
+echo $form->field($cate,'parent_id')->hiddenInput(['value'=>0]);
 echo \liyuze\ztree\ZTree::widget([
     'setting' => '{
 			data: {
@@ -20,11 +21,13 @@ echo \liyuze\ztree\ZTree::widget([
 ]);
 echo \yii\helpers\Html::submitButton('添加',['class'=>'btn btn-info']);
 \yii\bootstrap\ActiveForm::end();
-?>
-<?php
+
 $js=<<<EOF
 
-            var treeObj = $.fn.zTree.getZTreeObj("w1");
+           var treeObj = $.fn.zTree.getZTreeObj("w1");
+            var node = treeObj.getNodeByParam("id", "$cate->parent_id", null);
+           treeObj.selectNode(node);
+           $("#goodscate-parent_id").val($cate->parent_id);
             treeObj.expandAll(true);
 
 EOF;
@@ -39,3 +42,4 @@ $this->registerJs($js);
 //        zTree.expandNode(treeNode);
     }
 </script>
+<a href="index" class="btn btn-success glyphicon glyphicon-arrow-right col-lg-offset-10"></a>
