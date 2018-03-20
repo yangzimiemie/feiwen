@@ -3,8 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\GoodsCate;
-use creocoder\nestedsets\NestedSetsBehavior;
-use PHPUnit\Util\Log\JSON;
+
 use yii\db\Exception;
 use yii\web\Request;
 class GoodsCateController extends \yii\web\Controller

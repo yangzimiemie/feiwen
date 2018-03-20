@@ -3,11 +3,9 @@
 namespace backend\controllers;
 
 use app\models\Brand;
-use yii\captcha\CaptchaAction;
 use yii\data\Pagination;
 use yii\web\Request;
 use yii\web\UploadedFile;
-use crazyfd\qiniu\Qiniu;
 class BrandController extends CommenController
 {
     /**
@@ -79,30 +77,18 @@ class BrandController extends CommenController
         $brand = Brand::findOne($id);
         //判断post提交
         if (\yii::$app->request->isPost) {
-            //获得实列
-            $brand->img = UploadedFile::getInstance($brand, 'img');
-            //先定义一个空的路径
-            $imgPath = "";
-            //判断图片是否为空
-            if ($brand->img !== null) {
-                //图片存的地方和格式
-                $imgPath = "images/" . time() . "." . $brand->img->extension;
-                //移动临时文件并且要阻止删除默认临时文件
-                $brand->img->saveAs($imgPath, false);
-            }
-            //绑定数据
             $brand->load(\yii::$app->request->post());
             //验证
             if ($brand->validate()) {
-                //在保存数据前传到视图的logo中去
-                $brand->logo = $imgPath;//一定要传到视图中的logo中去不然不可以修改
-                //保存数据
-                if ($brand->save()) {
+
+                if ($brand->save(false)) {
                     //修改成功的提示
                     \yii::$app->session->setFlash('success', '修改成功啦~');
                     //返回列表
                     return $this->redirect('index');
                 }
+            }else{
+                var_dump($brand->errors);exit;
             }
         }
         //现实视图

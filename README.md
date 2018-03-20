@@ -193,8 +193,31 @@ _1.先分析数据表_
         删除
 4.视图的显示和添加修改页面
 
-##### 未完成搜索和多图片上传其余已完成
+#### 商品货号自动生成为年月日+数据表中数据而定
+```
+ if (!$goods->sn) {
+        $goodsTime = strtotime(date('Ymd'));
+        $count = Goods::find()->where(['>', 'create_time', $goodsTime])->count();
+        $count = $count + 1;
+        $countStr = "0000" . $count;
+        $countStr = substr($countStr, -5);
+        $goods->sn = date('Ymd') . $countStr;
    
+```
+### 多图上传
+在编辑的时候需要回显多张图片的时候需要遍历
+```
+GoodsImages::deleteAll(['goods_id'=>'id']);//需要删除全部，解决图片出现多次
+    foreach ($goods->images as $image){
+            $files = new GoodsImages();
+            $files->goods_id=$goods->id;
+            $files->images=$image;
+            $files->save();
+    }
+        $images = GoodsImages::find()->where(['goods_id'=>$id])->asArray()->all();
+        $images = array_column($images,'images');
+        $goods->images = $images;
+```
 
 
     	

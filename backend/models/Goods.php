@@ -4,6 +4,8 @@ namespace app\models;
 
 use backend\models\GoodsCate;
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "goods".
@@ -19,14 +21,15 @@ use Yii;
  * @property int $create_time 商品更新时间
  * @property int $update_time 商品修改时间
  */
-class Goods extends \yii\db\ActiveRecord implements \vintage\search\interfaces\SearchInterface
+class Goods extends \yii\db\ActiveRecord
 {
-    public $img;
+    public $images;
     public function rules()
     {
         return [
-            [['name', 'status', 'brand','sn','goods_cate_id','logo'], 'required'],
-            [['sort'],'integer'],
+            [['name', 'status', 'brand_id','goods_cate_id','logo'], 'required'],
+            [['sort','stock'],'integer'],
+            [['images','sn',],'safe'],
             [['price'],'double'],
         ];
     }
@@ -42,6 +45,7 @@ class Goods extends \yii\db\ActiveRecord implements \vintage\search\interfaces\S
             'sn' => '商品货号',
             'price' => '商品价格',
             'sort' => '商品排序',
+            'stock' => '商品库存',
             'goods_cate_id' => '商品分类ID',
             'brand' => '商品品牌',
             'create_time' => '商品更新时间',
@@ -51,50 +55,24 @@ class Goods extends \yii\db\ActiveRecord implements \vintage\search\interfaces\S
 public function getGoodsCate(){
         return $this->hasOne(GoodsCate::className(),['id'=>'goods_cate_id']);
 }
-
-    /**
-     * Gets title.
-     *
-     * @return string This string will be inserted to the search result
-     * to `title` field.
-     */
-    public function getSearchTitle()
-    {
-        return $this->title;
+    public function getBrandName(){
+        return $this->hasOne(Brand::className(),['id'=>'brand_id']);
     }
 
     /**
-     * Gets description.
-     *
-     * @return string This string will be inserted to the search result
-     * to `description` field.
+     * 时间注入行为
+     * @return array
      */
-    public function getSearchDescription()
-    {
-        return $this->short_description;
-    }
-
-    /**
-     * Gets routes.
-     *
-     * @return string This string will be inserted to the search result
-     * to `url` field.
-     */
-    public function getSearchUrl()
-    {
-        return Url::toRoute(['/news/default/index', 'id' => $this->id]);
-    }
-
-    /**
-     * @return string[] Array of the field names
-     * where will be implemented search in model.
-     */
-    public function getSearchFields()
+    public function behaviors()
     {
         return [
-            'title',
-            'short_description',
-            'content',
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_time', 'update_time'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['update_time'],
+                ],
+            ],
         ];
     }
 }
