@@ -1,64 +1,4 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
-</p>
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
-
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
-
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
-
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
-
-DIRECTORY STRUCTURE
--------------------
-
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
-"# feiwen" 
 ## 项目概述
 ##### 类似京东商城的B2C商城 (C2C B2B O2O P2P ERP进销存 CRM客户关系管理)
 ##### 电商或电商类型的服务在目前来看依旧是非常常用，虽然纯电商的创业已经不太容易，但是各个公司都有变现的需要，所以在自身应用中嵌入电商功能是非常普遍的做法。
@@ -87,7 +27,7 @@ environments/            contains environment-based overrides
 - [x] 文章管理：
 - [x] 商品分类管理：
 - [x] 商品管理：
-- [ ] 账号管理：
+- [x]  账号管理：
 - [ ] 权限管理：
 - [ ] 菜单管理：
 - [ ] 订单管理：
@@ -218,7 +158,37 @@ GoodsImages::deleteAll(['goods_id'=>'id']);//需要删除全部，解决图片�
         $images = array_column($images,'images');
         $goods->images = $images;
 ```
+## 管理模块
+需求：完成管理员的登录，管理员的CRUD，ip地址
+###### 先分析数据表
+管理员表
 
+	id
+	username
+	auth_key
+	password_hash
+	status
+	email
+	logo
+	login_ip
+	login_time
+	create_time
+	update_time
+	
+	使用加密
+	```
+	  $admin = Admin::findOne(['username'=>$model->username]);
+              //判断用户是否存在
+              if($admin){
+                  if (\yii::$app->security->validatePassword($model->password,$admin->password_hash)) {
+                        //密码正确就用user组件登录
+                     \yii::$app->user->login($admin,$model->rememberMe?3600*24*7:0);
+                     //修改登录的时间和IP
+                      $admin->login_ip=ip2long(\yii::$app->request->userIP);
+                      $admin->login_time=time();
+                      $admin->save();
+```
+登录遇到的问题：不够细心！！！
 
     	
 

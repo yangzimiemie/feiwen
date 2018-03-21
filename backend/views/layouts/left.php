@@ -5,10 +5,10 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image"/>
+                <img src="<?=yii::$app->user->identity->logo?>" class="img-circle" alt="User Image"/>
             </div>
             <div class="pull-left info">
-                <p>阳子美美</p>
+                <p>你好<?=yii::$app->user->identity->username?></p>
 
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
@@ -75,8 +75,7 @@
                     [
                         'label' => '管理模块', 'icon' => 'user-circle', 'url' => ['index'],
                         'items' => [
-                            ['label' => '登录', 'icon' => 'user', 'url' => ['#'],],
-                            ['label' => '注册', 'icon' => 'user-plus', 'url' => ['#'],],
+                            ['label' => '管理', 'icon' => 'user', 'url' => ['admin/index'],],
                         ],
                     ],
                 ],
