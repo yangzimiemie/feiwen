@@ -43,10 +43,19 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username','password_hash'], 'required'],
+            [['username','status'], 'required'],
             [['username'], 'unique'],
             [['email','logo'],'safe'],
+            [['password_hash'],'required','on' => ['add']],
+            [['password_hash'],'safe','on' => ['edit']]
         ];
+    }
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['add'] = ['password_hash','username','status','logo','email'];
+        $scenarios['edit'] = ['password_hash','username','status','logo','email'];
+        return $scenarios;
     }
 
     /**

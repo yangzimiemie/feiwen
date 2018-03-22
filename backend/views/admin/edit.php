@@ -1,7 +1,8 @@
 <?php
 $from = \yii\bootstrap\ActiveForm::begin();
 echo $from->field($admin,'username');;
-echo $from->field($admin,'status')->inline()->radioList(['禁用','开启'],['value'=>1]);
+echo $from->field($admin,'password_hash')->passwordInput(['value'=>""]);
+echo $from->field($admin,'status')->inline()->radioList(['禁用',10=>'开启']);
 echo $from->field($admin,'email');
 echo $from->field($admin, 'logo')->widget('manks\FileInput', [
 ]);

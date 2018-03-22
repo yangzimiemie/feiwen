@@ -19,7 +19,7 @@
         <td><?=$row->id?></td>
         <td><?=$row->username?></td>
         <td><?=$row->email?></td>
-        <td><?=$row->login_ip?></td>
+        <td><?=long2ip($row->login_ip)?></td>
         <td>
             <?php
             $imgFile =strpos($row->logo,'ttp://')?$row->logo:"/".$row->logo;

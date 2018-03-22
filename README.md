@@ -190,7 +190,75 @@ GoodsImages::deleteAll(['goods_id'=>'id']);//需要删除全部，解决图片�
 ```
 登录遇到的问题：不够细心！！！
 
-    	
+ ```
+ ## 2018-3-22做的是场景和调试代码
+ ```
+ 在弄场景的时候需要在models中设置规则和一个scenarios类
+ 
+    [['password_hash'],'required','on' => ['add']],
+    [['password_hash'],'safe','on' => ['edit']]
+    
+     public function scenarios()
+     {
+         $scenarios = parent::scenarios();
+         $scenarios['add'] = ['password_hash','username','status','logo','email'];
+         $scenarios['edit'] = ['password_hash','username','status','logo','email'];
+         return $scenarios;
+     }
+     再到控制器去设置  $admin->setScenario('edit');
+     ```
+ 
+ 需求:
+     在修改的时候需要看不到密码，所以在视图中设置一个默认空的值，在去视图中$password=$admin->password_hash;
+     还需要进行判断，用的是三元表达式
+     
+      $admin->password_hash=$admin->password_hash!==""?\yii::$app->security->generatePasswordHash($admin->password_hash):$password;
+      假如密码不为空，就写一个密码，为空就为之前设置的默认密码。
+ ```
+ 2018-3-22做了权限的管理
+ 
+ 1.首先创建了一个authItem的表单
+ 
+ 2.去创建控制器:
+ 
+ 列表的显示 
+ 
+ 添加权限：
+ 
+ 创建权限createPermission->设置权限description
+ 在把权限添加到库中去
+ 
+ 修改权限：
+ 
+ 因为name是主键所以不可以修改（主键一般都不修改，因为主键是唯一的）
+ 
+ ```
+ if($permission){
+                 //设置权限
+                 $permission->description=$per->description;
+                 //添加到库中
+                 if($amg->update($name,$permission)) {
+                     \yii::$app->session->setFlash('success', "修改权限");
+                     return $this->redirect('index');
+                 }
+             }else{
+                 \yii::$app->session->setFlash('danger', "不可以修改权限名称");
+                 return $this->redirect('index');
+             }
+ //因为name是主键不可以修改所以在视图中设置了一个
+ echo $from->field($per,'name')->textInput(['disabled'=>"disabled"]);
+ ```
+ 删除权限
+ ```
+       //1.先实列化组件
+     $auth = \yii::$app->authManager;
+     //2.找到
+     $per = $auth->getPermission($name);
+     //3.删除
+     if ($auth->remove($per)) {
+         return $this->redirect('index');
+     }
+     ```   	
 
 
 

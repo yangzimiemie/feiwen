@@ -30,6 +30,7 @@ class AdminController extends CommenController
      */
     public function actionAdd(){
         $admin = new Admin();
+        $admin->setScenario('add');
         $request = \yii::$app->request;
         if($request->isPost){
             $admin->load($request->post());
@@ -49,16 +50,28 @@ class AdminController extends CommenController
         }
       return  $this->render('add',compact('admin'));
     }
+
+    /**
+     * 修改
+     * @param $id
+     * @return string|\yii\web\Response
+     */
     public function actionEdit($id){
         $admin = Admin::findOne($id);
+        $password=$admin->password_hash;
         $request = \yii::$app->request;
+        $admin->setScenario('edit');
         if($request->isPost){
             $admin->load($request->post());
             if ($admin->validate()) {
-                $admin->password_hash=\yii::$app->security->generatePasswordHash($admin->password_hash);
-                $admin->auth_key=\yii::$app->security->generateRandomString();
-                $admin->login_ip=ip2long(\yii::$app->request->userIP);
-//                $admin->login_ip=long2ip(\yii::$app->request->userIP);
+//                if($admin->password_hash) {
+//                    $admin->password_hash = \yii::$app->security->generatePasswordHash($admin->password_hash);
+//                }else{
+//
+//                }
+
+                $admin->password_hash=$admin->password_hash!==""?\yii::$app->security->generatePasswordHash($admin->password_hash):$password;
+
                 if ($admin->save()) {
                     \yii::$app->session->setFlash('success','修改成功');
                     return $this->redirect('index');
@@ -69,6 +82,11 @@ class AdminController extends CommenController
         }
         return  $this->render('edit',compact('admin'));
     }
+
+    /**
+     * 登录
+     * @return string|\yii\web\Response
+     */
   public function actionLogin(){
         //判断用户有没有登录
       if (!\yii::$app->user->isGuest) {
@@ -81,10 +99,10 @@ class AdminController extends CommenController
           if ($model->validate()) {
               $admin = Admin::findOne(['username'=>$model->username]);
               //判断用户是否存在
-              if($admin){
+              if($admin && $admin->status==10){
                   if (\yii::$app->security->validatePassword($model->password,$admin->password_hash)) {
                         //密码正确就用user组件登录
-                     \yii::$app->user->login($admin,$model->rememberMe?3600*24*7:0);
+                     \yii::$app->user->login($admin,$model->rememberMe?3600*24*7:0);//记住
                      //修改登录的时间和IP
                       $admin->login_ip=ip2long(\yii::$app->request->userIP);
                       $admin->login_time=time();
@@ -95,9 +113,9 @@ class AdminController extends CommenController
                   }else{
                       $model->addError('password','密码不正确');
                   }
-              }
+              } $model->addError('username','用户名或者状态被禁用');
           }else{
-                $model->addError('username','用户不存在');
+
           }
       }
       return $this->render('login',compact('model'));
@@ -110,6 +128,12 @@ class AdminController extends CommenController
   public function actionLogout(){
       \yii::$app->user->logout();
       return $this->redirect('login');
+  }
+
+  public function actionDel($id){
+      if (Admin::findOne($id)->delete()) {
+         return $this->redirect('index');
+      }
   }
 
     /**
