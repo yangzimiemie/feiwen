@@ -1,4 +1,3 @@
-
 ## 项目概述
 ##### 类似京东商城的B2C商城 (C2C B2B O2O P2P ERP进销存 CRM客户关系管理)
 ##### 电商或电商类型的服务在目前来看依旧是非常常用，虽然纯电商的创业已经不太容易，但是各个公司都有变现的需要，所以在自身应用中嵌入电商功能是非常普遍的做法。
@@ -28,8 +27,8 @@
 - [x] 商品分类管理：
 - [x] 商品管理：
 - [x]  账号管理：
-- [ ] 权限管理：
-- [ ] 菜单管理：
+- [x]  权限管理：
+- [x]  菜单管理：
 - [ ] 订单管理：
  
 **品牌功能模块第一天**
@@ -189,77 +188,181 @@ GoodsImages::deleteAll(['goods_id'=>'id']);//需要删除全部，解决图片�
                       $admin->save();
 ```
 登录遇到的问题：不够细心！！！
+```
+## 2018-3-22做的是场景和调试代码
+```
+在弄场景的时候需要在models中设置规则和一个scenarios类
 
- ```
- ## 2018-3-22做的是场景和调试代码
- ```
- 在弄场景的时候需要在models中设置规则和一个scenarios类
- 
-    [['password_hash'],'required','on' => ['add']],
-    [['password_hash'],'safe','on' => ['edit']]
+   [['password_hash'],'required','on' => ['add']],
+   [['password_hash'],'safe','on' => ['edit']]
+   
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['add'] = ['password_hash','username','status','logo','email'];
+        $scenarios['edit'] = ['password_hash','username','status','logo','email'];
+        return $scenarios;
+    }
+    再到控制器去设置  $admin->setScenario('edit');
+    ```
+
+需求:
+    在修改的时候需要看不到密码，所以在视图中设置一个默认空的值，在去视图中$password=$admin->password_hash;
+    还需要进行判断，用的是三元表达式
     
-     public function scenarios()
-     {
-         $scenarios = parent::scenarios();
-         $scenarios['add'] = ['password_hash','username','status','logo','email'];
-         $scenarios['edit'] = ['password_hash','username','status','logo','email'];
-         return $scenarios;
-     }
-     再到控制器去设置  $admin->setScenario('edit');
-     ```
- 
- 需求:
-     在修改的时候需要看不到密码，所以在视图中设置一个默认空的值，在去视图中$password=$admin->password_hash;
-     还需要进行判断，用的是三元表达式
-     
-      $admin->password_hash=$admin->password_hash!==""?\yii::$app->security->generatePasswordHash($admin->password_hash):$password;
-      假如密码不为空，就写一个密码，为空就为之前设置的默认密码。
- ```
- 2018-3-22做了权限的管理
- 
- 1.首先创建了一个authItem的表单
- 
- 2.去创建控制器:
- 
- 列表的显示 
- 
- 添加权限：
- 
- 创建权限createPermission->设置权限description
- 在把权限添加到库中去
- 
- 修改权限：
- 
- 因为name是主键所以不可以修改（主键一般都不修改，因为主键是唯一的）
- 
- ```
- if($permission){
-                 //设置权限
-                 $permission->description=$per->description;
-                 //添加到库中
-                 if($amg->update($name,$permission)) {
-                     \yii::$app->session->setFlash('success', "修改权限");
-                     return $this->redirect('index');
-                 }
-             }else{
-                 \yii::$app->session->setFlash('danger', "不可以修改权限名称");
-                 return $this->redirect('index');
-             }
- //因为name是主键不可以修改所以在视图中设置了一个
- echo $from->field($per,'name')->textInput(['disabled'=>"disabled"]);
- ```
- 删除权限
- ```
-       //1.先实列化组件
-     $auth = \yii::$app->authManager;
-     //2.找到
-     $per = $auth->getPermission($name);
-     //3.删除
-     if ($auth->remove($per)) {
-         return $this->redirect('index');
-     }
-     ```   	
+     $admin->password_hash=$admin->password_hash!==""?\yii::$app->security->generatePasswordHash($admin->password_hash):$password;
+     假如密码不为空，就写一个密码，为空就为之前设置的默认密码。
+```
+2018-3-22做了权限的管理
+
+1.首先创建了一个authItem的表单
+
+2.去创建控制器:
+
+列表的显示 
+
+添加权限：
+
+创建权限createPermission->设置权限description
+在把权限添加到库中去
+
+修改权限：
+
+因为name是主键所以不可以修改（主键一般都不修改，因为主键是唯一的）
+
+```
+if($permission){
+                //设置权限
+                $permission->description=$per->description;
+                //添加到库中
+                if($amg->update($name,$permission)) {
+                    \yii::$app->session->setFlash('success', "修改权限");
+                    return $this->redirect('index');
+                }
+            }else{
+                \yii::$app->session->setFlash('danger', "不可以修改权限名称");
+                return $this->redirect('index');
+            }
+//因为name是主键不可以修改所以在视图中设置了一个
+echo $from->field($per,'name')->textInput(['disabled'=>"disabled"]);
+```
+删除权限
+
+```
+      //1.先实列化组件
+    $auth = \yii::$app->authManager;
+    //2.找到
+    $per = $auth->getPermission($name);
+    //3.删除
+    if ($auth->remove($per)) {
+        return $this->redirect('index');
+    }
+```
+## 角色的管理
+1. 创建控制器
+2. 添加的角色的时候需要判定是否添加了权限
+```
+添加的时候需要显示权限所有在authItem模型中声明一个permission属性
+                //判断有没有添加权限
+                if($role->permission){
+                    //循环并且将权限加入到角色
+                    foreach($role->permission as $perName){
+                        //找到权限并获得权限名
+                        $per = $auth->getPermission($perName);
+                        //给角色添加权限
+                        $auth->addChild($createRole,$per);
+                    }
+                }
+                //因为有多个权限所有用循环
+                //视图中用CheckBox
+```
+3.修改角色
+```
+//需要删除角色当前的权限
+ $auth->removeChildren($createRole);
+```
+4.删除
+
+需要先找到再去删除 （remove）
+
+5.把用户添加到角色
+
+指派角色名和id
 
 
+## 过滤器
+创建一个文件（filters）->第一次的时候需要命名空间
+```
+public function beforeAction($action)
+    {
+        //判断当前用户有没有权限
+        if(!\yii::$app->user->can($action->uniqueId)){
+            $html = <<<html
+        <script>
+        window.history.go(-1);
+        </script>
+html;
+            \yii::$app->session->setFlash('success','你没有权限操作');
+            echo $html;
+            return false;
+        }
+        return parent::beforeAction($action);
+    }
+```
+需要注入行为
+ ```
+  public function behaviors()
+    {
+        return [
+            'rbac'=>[
+               'class'=>RbacFilter::className(),
+            ],
+        ];
+   }
+```
+也可以写一个全局，在配置里面就不用单独写在控制器里面了
+
+## 菜单目录
+1. 先创建数据表
+   需要id/name/icon/url/parent_id(因为菜单是二级所有要父级ID)
+2. 创建模型
+3. 创建控制器->添加需要的目录并添加地址
+4. 在模型中写一个静态的方法
+```
+//声明一个静态方法
+public static function menus(){
+    $menuAll=[
+                'label' => '商品模块', 'icon' => 'cart-arrow-down', 'url' => ['index'],
+                'items' => [
+                ['label' => '商品管理', 'icon' => 'paint-brush', 'url' => ['goods/index'],],
+                ['label' => '商品分类', 'icon' => 'folder-open', 'url' => ['goods-cate/index'],],
+                ],
+                ];
+    $menuAll=[];
+    //得到所有父级
+    $menuPar = self::find()->where(['parent_id'=>0])->all();
+    //循环出来
+    foreach ($menuPar as $menu){
+      $newMenu=[];
+      $newMenu['label']=$menu->name;
+      $newMenu['icon']=$menu->icon;
+      $newMenu['url']=$menu->url;
+       //再去找父级ID的娃儿
+        $parChind = self::find()->where(['parent_id'=>$menu->id])->all();
+        //再去循环
+        foreach ($parChind as $chind){
+            $newChind = [];
+            $newChind['label']=$chind->name;
+            $newChind['icon']=$chind->icon;
+            $newChind['url']=$chind->url;
+            $newMenu['items'][]=$newChind;
+        }
+        $menuAll=$newMenu;
+    }
+//    exit;
+    return $menuAll;
+}
+```
+还需要在视图left中
 
 

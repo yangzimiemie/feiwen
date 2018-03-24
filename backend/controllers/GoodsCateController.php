@@ -6,7 +6,7 @@ use backend\models\GoodsCate;
 
 use yii\db\Exception;
 use yii\web\Request;
-class GoodsCateController extends \yii\web\Controller
+class GoodsCateController extends CommenController
 {
     /**
      * 显示列表

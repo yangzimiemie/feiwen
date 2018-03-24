@@ -1,7 +1,5 @@
 <aside class="main-sidebar">
-
     <section class="sidebar">
-
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
@@ -13,7 +11,6 @@
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
-
         <!-- search form -->
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
@@ -25,7 +22,6 @@
             </div>
         </form>
         <!-- /.search form -->
-
         <?= dmstr\widgets\Menu::widget(
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
@@ -48,7 +44,6 @@
                         'label' => '品牌模块', 'icon' => 'yelp', 'url' => ['index'],
                         'items' => [
                             ['label' => '品牌管理', 'icon' => 'hand-lizard-o', 'url' => ['brand/index'],],
-
                         ],
                     ],
                 ],
@@ -82,5 +77,4 @@
             ]
         ) ?>
     </section>
-
 </aside>

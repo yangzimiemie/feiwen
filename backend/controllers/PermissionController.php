@@ -6,6 +6,10 @@ use backend\models\AuthItem;
 
 class PermissionController extends \yii\web\Controller
 {
+    /**
+     * 列表
+     * @return string
+     */
     public function actionIndex()
     {
         //实列化组件
@@ -30,10 +34,10 @@ class PermissionController extends \yii\web\Controller
         if($per->load(\yii::$app->request->post()) && $per->validate()){
             //创建权限
             $permission = $amg->createPermission($per->name);
-            //设置权限
+            //设置描述
             $permission->description=$per->description;
             //添加到库中
-            if($amg->add($permission)) {
+            if($amg->add($permission)){
                 \yii::$app->session->setFlash('success', "添加权限" . $per->name . "成功");
                 return $this->refresh();
             }
@@ -78,14 +82,14 @@ class PermissionController extends \yii\web\Controller
      * @param $name
      * @return \yii\web\Response
      */
-public function actionDel($name){
-        //1.先实列化组件
-    $auth = \yii::$app->authManager;
-    //2.找到
-    $per = $auth->getPermission($name);
-    //3.删除
-    if ($auth->remove($per)) {
-        return $this->redirect('index');
+    public function actionDel($name){
+            //1.先实列化组件
+        $auth = \yii::$app->authManager;
+        //2.找到
+        $per = $auth->getPermission($name);
+        //3.删除
+        if ($auth->remove($per)) {
+            return $this->redirect('index');
+        }
     }
-}
 }

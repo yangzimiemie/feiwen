@@ -8,6 +8,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\RbacFilter;
 use yii\captcha\CaptchaAction;
 use yii\web\UploadedFile;
 use crazyfd\qiniu\Qiniu;
@@ -107,5 +108,12 @@ class CommenController extends Controller
         return json_encode($correct);
     }
 
-
+//    public function behaviors()
+//    {
+//        return [
+//            'rbac'=>[
+//               'class'=>RbacFilter::className(),
+//            ],
+//        ];
+//   }
 }

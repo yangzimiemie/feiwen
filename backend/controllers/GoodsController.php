@@ -6,6 +6,7 @@ use app\models\Brand;
 use app\models\Goods;
 use app\models\GoodsDetail;
 use app\models\GoodsImages;
+use backend\filters\RbacFilter;
 use backend\models\GoodsCate;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
@@ -13,6 +14,7 @@ use yii\web\Request;
 
 class GoodsController extends CommenController
 {
+
     /**
      * 商品列表
      * @return string

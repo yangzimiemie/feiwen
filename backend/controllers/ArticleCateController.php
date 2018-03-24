@@ -6,7 +6,7 @@ use app\models\ArticleCategory;
 use yii\data\Pagination;
 use yii\web\Request;
 
-class ArticleCateController extends \yii\web\Controller
+class ArticleCateController extends CommenController
 {
     /**
      * 显示列表方法
