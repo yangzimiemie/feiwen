@@ -363,6 +363,88 @@ public static function menus(){
     return $menuAll;
 }
 ```
-还需要在视图left中
+2018-3-25  RBAC和菜单
+
+rbac的完善：
+1. 先去下载yii2 admin
+2. 按照步骤进行配置
+```
+return [
+//    'as rabc'=>[
+//        'class'=>\backend\filters\RbacFilter::className(),
+//    ],
+    'as access' => [
+        'class' => 'mdm\admin\components\AccessControl',
+        'allowActions' => [
+//            '/*',
+//            'site/*',
+            'rbac/*',
+            'admin/*',
+            'some-controller/some-action',
+            // The actions listed here will be allowed to everyone including guests.
+            // So, 'admin/*' should not appear here in the production, of course.
+            // But in the earlier stages of your development, you may probably want to
+            // add a lot of actions here until you finally completed setting up rbac,
+            // otherwise you may not even take a first step.
+        ]
+    ],
+    'modules' => [
+        'rbac' => [
+            'class' => 'mdm\admin\Module',
+//            'layout' => 'left-menu',
+        ]
+],
+    'id' => 'app-backend',
+    'basePath' => dirname(__DIR__),
+    'controllerNamespace' => 'backend\controllers',
+    'bootstrap' => ['log'],
+//    'modules' => [],
+    'components' => [
+        //语言包配置
+        'i18n'=>[
+            'translations'=>[
+                '*'=>[
+                    'class'=>'yii\i18n\PhpMessageSource',
+                    'fileMap'=>[
+                        'common'=>'common.php',
+                    ],
+                ],
+            ],
+        ],
+```
+进行角色和权限/路由的分配
+菜单->新增菜单->设置图标时需要设置排序和数据
+
+```
+//还需要在视图left.php中：
+   <?php
+        $callback = function($menu){
+            $data = json_decode($menu['data'], true);
+            $items = $menu['children'];
+            $return = [
+                'label' => $menu['name'],
+                'url' => [$menu['route']],
+            ];
+            //处理我们的配置
+            if ($data) {
+                //visible
+                isset($data['visible']) && $return['visible'] = $data['visible'];
+                //icon
+                isset($data['icon']) && $data['icon'] && $return['icon'] = $data['icon'];
+                //other attribute e.g. class...
+                $return['options'] = $data;
+            }
+            //没配置图标的显示默认图标
+            (!isset($return['icon']) || !$return['icon']) && $return['icon'] = 'fa fa-circle-o';
+            $items && $return['items'] = $items;
+            return $return;
+        };
+        //这里我们对一开始写的菜单menu进行了优化
+        echo dmstr\widgets\Menu::widget( [
+            'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+            'items' => \mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback),
+        ] ); ?>
+```
+设置角色的权限：为角色设置相应的权限
 
 

@@ -21,60 +21,35 @@
               </span>
             </div>
         </form>
+
         <!-- /.search form -->
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    [
-                        'label' => '商品模块', 'icon' => 'cart-arrow-down', 'url' => ['index'],
-                        'items' => [
-                            ['label' => '商品管理', 'icon' => 'paint-brush', 'url' => ['goods/index'],],
-                            ['label' => '商品分类', 'icon' => 'folder-open', 'url' => ['goods-cate/index'],],
-                        ],
-                    ],
-                ],
-            ]
-        ) ?>
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    [
-                        'label' => '品牌模块', 'icon' => 'yelp', 'url' => ['index'],
-                        'items' => [
-                            ['label' => '品牌管理', 'icon' => 'hand-lizard-o', 'url' => ['brand/index'],],
-                        ],
-                    ],
-                ],
-            ]
-        ) ?>
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    [
-                        'label' => '文章模块', 'icon' => 'file-text', 'url' => ['index'],
-                        'items' => [
-                            ['label' => '文章管理', 'icon' => 'magic', 'url' => ['article/index'],],
-                            ['label' => '文章分类', 'icon' => 'folder-open', 'url' => ['article-cate/index'],],
-                        ],
-                    ],
-                ],
-            ]
-        ) ?>
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    [
-                        'label' => '管理模块', 'icon' => 'user-circle', 'url' => ['index'],
-                        'items' => [
-                            ['label' => '管理', 'icon' => 'user', 'url' => ['admin/index'],],
-                        ],
-                    ],
-                ],
-            ]
-        ) ?>
+        <?php
+        $callback = function($menu){
+            $data = json_decode($menu['data'], true);
+            $items = $menu['children'];
+            $return = [
+                'label' => $menu['name'],
+                'url' => [$menu['route']],
+            ];
+            //处理我们的配置
+            if ($data) {
+                //visible
+                isset($data['visible']) && $return['visible'] = $data['visible'];
+                //icon
+                isset($data['icon']) && $data['icon'] && $return['icon'] = $data['icon'];
+                //other attribute e.g. class...
+                $return['options'] = $data;
+            }
+            //没配置图标的显示默认图标
+            (!isset($return['icon']) || !$return['icon']) && $return['icon'] = 'fa fa-circle-o';
+            $items && $return['items'] = $items;
+            return $return;
+        };
+        //这里我们对一开始写的菜单menu进行了优化
+        echo dmstr\widgets\Menu::widget( [
+            'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+            'items' => \mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback),
+        ] ); ?>
     </section>
 </aside>
+

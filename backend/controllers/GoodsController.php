@@ -179,4 +179,9 @@ class GoodsController extends CommenController
         return $this->render('edit', compact('goods', 'details', 'conts', 'catesArr', 'brandArr'));
     }
 
+    public function actionDel($id){
+        if (Goods::findOne($id)->delete()) {
+            return $this->redirect('index');
+        }
+    }
 }
