@@ -50,7 +50,6 @@ class AdminController extends CommenController
         }
       return  $this->render('add',compact('admin'));
     }
-
     /**
      * 修改
      * @param $id
