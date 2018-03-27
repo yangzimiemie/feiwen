@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<title>用户注册</title>
+	<title>登录商城</title>
 	<link rel="stylesheet" href="/style/base.css" type="text/css">
 	<link rel="stylesheet" href="/style/global.css" type="text/css">
 	<link rel="stylesheet" href="/style/header.css" type="text/css">
@@ -41,54 +41,33 @@
 	<!-- 页面头部 end -->
 	
 	<!-- 登录主体部分start -->
-	<div class="login w990 bc mt10 regist">
+	<div class="login w990 bc mt10">
 		<div class="login_hd">
-			<h2>用户注册</h2>
+			<h2>用户登录</h2>
 			<b></b>
 		</div>
 		<div class="login_bd">
 			<div class="login_form fl">
-				<form action="" method="post" id="reg">
+				<form action="" method="post" id="login">
 					<ul>
 						<li>
 							<label for="">用户名：</label>
-							<input type="text" class="txt" name="User[username]" id="username"/>
-							<p>3-20位字符，可由中文、字母、数字和下划线组成</p>
+                            <input type="text" class="txt" name="User[username]" id="username"/>
 						</li>
 						<li>
 							<label for="">密码：</label>
-							<input type="password" class="txt" name="User[password]" id="password"/>
-							<p>6-20位字符，可使用字母、数字和符号的组合，不建议使用纯数字、纯字母、纯符号</p>
+                            <input type="password" class="txt" name="User[password]" id="password"/>
+							<a href="">忘记密码?</a>
 						</li>
-						<li>
-							<label for="">确认密码：</label>
-							<input type="password" class="txt" name="User[rePassword]" id="rePassword"/>
-							<p> <span>请再次输入密码</p>
-						</li>
-						<li>
-							<label for="">邮箱：</label>
-							<input type="text" class="txt" name="User[email]" id="email"/>
-							<p>邮箱必须合法</p>
-						</li>
-						<li>
-							<label for="">手机号码：</label>
-							<input type="text" class="txt" value="" name="User[tel]" id="tel" placeholder="请输入手机号"/>
-						</li>
-						<li>
-							<label for="">验证码：</label>
-                            <input type="text" class="txt" value="" placeholder="请输入短信验证码" name="User[message]" disabled="disabled" id="message"/> <input type="button" onclick="bindPhoneNum(this)" id="get_captcha" value="获取验证码" style="height: 25px;padding:3px 8px"/>
-
-						</li>
-						<li class="checkcode">
-							<label for="">验证码：</label>
-							<input type="text"  name="User[code]" id="code"/>
-							<img src="/user/code" alt="" id="codeImage"/>
-							<span>看不清？<a href="Javascript:void(0)" id="changeCode">换一张</a></span>
-						</li>
-						
+                        <li class="checkcode">
+                            <label for="">验证码：</label>
+                            <input type="text"  name="User[code]" id="code"/>
+                            <img src="/user/code" id="codeImage"/>
+                            <span>看不清？<a href="Javascript:void(0)" id="changeCode">换一张</a></span>
+                        </li>
 						<li>
 							<label for="">&nbsp;</label>
-							<input type="checkbox" class="chb" checked="checked" /> 我已阅读并同意《用户注册协议》
+							<input type="checkbox" class="chb" name="rememberMe" /> 保存登录信息
 						</li>
 						<li>
 							<label for="">&nbsp;</label>
@@ -96,12 +75,26 @@
 						</li>
 					</ul>
 				</form>
+
+				<div class="coagent mt15">
+					<dl>
+						<dt>使用合作网站登录商城：</dt>
+						<dd class="qq"><a href=""><span></span>QQ</a></dd>
+						<dd class="weibo"><a href=""><span></span>新浪微博</a></dd>
+						<dd class="yi"><a href=""><span></span>网易</a></dd>
+						<dd class="renren"><a href=""><span></span>人人</a></dd>
+						<dd class="qihu"><a href=""><span></span>奇虎360</a></dd>
+						<dd class=""><a href=""><span></span>百度</a></dd>
+						<dd class="douban"><a href=""><span></span>豆瓣</a></dd>
+					</dl>
+				</div>
 			</div>
 			
-			<div class="mobile fl">
-				<h3>手机快速注册</h3>			
-				<p>中国大陆手机用户，编辑短信 “<strong>XX</strong>”发送到：</p>
-				<p><strong>1069099988</strong></p>
+			<div class="guide fl">
+				<h3>还不是商城用户</h3>
+				<p>现在免费注册成为商城用户，便能立刻享受便宜又放心的购物乐趣，心动不如行动，赶紧加入吧!</p>
+
+				<a href="/user/reg" class="reg_btn">免费注册 >></a>
 			</div>
 
 		</div>
@@ -136,25 +129,26 @@
 	</div>
 	<!-- 底部版权 end -->
     <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="/layer/layer.js"></script>
-	<script type="text/javascript">
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript">
         $(function () {
             $(".login_btn").click(function () {
-            //发起ajax请求
-            $.post('/user/reg',$('#reg').serialize(),function (result) {
-//                console.dir(result);
-                if(result.status){
-                    window.location.href="/user/login";
-                }else{
-                    $.each(result.data,function (k,v){
-                        layer.tips(v[0], '#'+k, {
-                            tips: [2, '#CB82D8'], //配置颜色
-                            tipsMore: true//不摧毁，延迟显示
+                //发起ajax请求
+                $.post('/user/login',$('#login').serialize(),function (result) {
+                console.dir(result);
+                    if(result.status){
+                        window.location.href="/user/index";
+                    }else{
+                        $.each(result.data,function (k,v){
+                            layer.tips(v[0], '#'+k, {
+                                tips: [2, '#CB82D8'], //配置颜色
+                                tipsMore: true//不摧毁，延迟显示
+                            });
+                            console.log(k);
                         });
-                         console.log(k);
-                    });
-                }
-            },'json');
+                    }
+
+                },'json');
             });
             //找到验证码和图片给他们一个点击事件
             $('#codeImage,#changeCode').click(function (){
@@ -165,27 +159,6 @@
                 })
             });
         });
-		function bindPhoneNum(){
-		    //发起ajax请求
-            $.getJSON('/user/send-sms?tel='+$("#tel").val(),function (data) {
-                console.dir(data);
-            });
-			//启用输入框
-			$('#message').prop('disabled',false);
-			var time=30;
-			var interval = setInterval(function(){
-				time--;
-				if(time<=0){
-					clearInterval(interval);
-					var html = '获取验证码';
-					$('#get_captcha').prop('disabled',false);
-				} else{
-					var html = time + ' 秒后再次获取';
-					$('#get_captcha').prop('disabled',true);
-				}
-				$('#get_captcha').val(html);
-			},1000);
-		}		
-	</script>
+    </script>
 </body>
 </html>

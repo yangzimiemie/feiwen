@@ -446,5 +446,182 @@ return [
         ] ); ?>
 ```
 设置角色的权限：为角色设置相应的权限
+# 前台
+## 用户的注册
+数据库中有自带的user表，添上几个需要的字段
+创建model，分析需要的属性和规则。
+创建控制器，添加reg方法
+```
+  if ($user->validate()) {
+                $user->password_hash=\Yii::$app->security->generatePasswordHash($user->password);
+                $user->auth_key=\yii::$app->security->generateRandomString();
+                $user->login_ip=ip2long(\yii::$app->request->userIP);
+                if ($user->save(false)) {
+                    $result = ['status'=>1,'data'=>$user->errors,'msg'=>'注册成功啦~'];
+                    return \yii\helpers\Json::encode($result);
+                }
+            }else{
+                $result = ['status'=>0,'data'=>$user->errors,'msg'=>'注册失败啦~'];
+                return \yii\helpers\Json::encode($result);
+            }
+```
+显示视图的时候把前台的模板弄过来需要修改一些路径。
+在视图中找到提交按钮，修改为button，提交ajax请求，判读状态默认为1，登录成功跳转页面，如下：
+```
+     $(".login_btn").click(function () {
+            //发起ajax请求
+            $.post('/user/reg',$('#reg').serialize(),function (result) {
+//                console.dir(result);
+                if(result.status){
+                    window.location.href="/user/login";
+                }else{
+                    $.each(result.data,function (k,v){
+                        layer.tips(v[0], '#'+k, {
+                            tips: [2, '#CB82D8'], //配置颜色
+                            tipsMore: true//不摧毁，延迟显示
+                        });
+                         console.log(k);
+                    });
+                }
+            },'json');
+            });
+```
+在注册的时候需要短信生成：
+        /*
+         * 生成验证码随机六位
+         * 将验证码发送给手机
+         * 将验证码存于session，手机号当键。验证码当值
+         * 错误的话打印错误信息
+         */
+ ```
+     $code = rand(100000,999999);
+        $config = [
+            'access_key' => 'LTAICIw8JtwoPRoH',
+            'access_secret' => '3qD8D4TUEGWBZrbM3wRyjIZOQ67hsH',
+            'sign_name' => '菲纹',
+        ];
+//        $aliSms = new Mrgoon\AliSms\AliSms();
+        $aliSms = new AliSms();
+        $response = $aliSms->sendSms($tel, 'SMS_128651091', ['code'=> $code], $config);
+//        var_dump($response);exit;
+        if ($response->Message=="OK"){
+            $session = \yii::$app->session;
+//        var_dump($session);exit;
+            $session->set("tel".$tel,$code);
+        }else{
+            var_dump($response->Message);
+        }     
+```
+验证验证码是否输入正确：
+```
+    public function actionSms($tel,$code){
+        //通过手机号取出存在session
+        $codeOld = \yii::$app->session->get("tel".$tel);
+        //判断验证码是否正确
+        if($code==$codeOld){
+            echo "ok";
+        }else{
+            echo "no";
+        }
 
+    }
+```
+在reg视图中，发起ajax请求获取手机号的值
+```
+function bindPhoneNum(){
+		    //发起ajax请求
+            $.getJSON('/user/send-sms?tel='+$("#tel").val(),function (data) {
+                console.dir(data);
+            });
+```
+在模型中把获取存在session的验证码
+判断验证码是否正确
+```
+   public function validateMessage($attribute,$params){
+         //获取之前存在session的验证码
+        $coded = \yii::$app->session->get("tel".$this->tel);
+        //判断验证码是否正确
+        if($this->message!=$coded){
+             $this->addError($attribute,'验证码错误');
+        }
+//        var_dump($coded);exit;
+        //判断验证码是否正确
+    }
+```
+## 验证码：
+```
+ public function actions()
+    {
+        return [
+            'code' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'minLength' => 3,
+                'maxLength' => 3,
+                'foreColor' => 0x520000
+            ],
+        ];
+    }
+```
+在视图中找到验证码为它添加一个点击事件，可以点击图片或者点击换一张，
+```
+  $('#codeImage,#changeCode').click(function (){
+                //发起ajax请求，在找到图片验证码去修改他的src
+                $.getJSON('/user/code?refresh',function (data) {
+                    $('#codeImage').attr('src',data.url);
+                    console.dir(data);
+                })
+            });
+        });
+```
+在模型中需要设置验证码的属性和规则
+        
+## 用户登录
+添加一个login的方法
+
+创建一个模型对象
+
+判断是否post提交
+
+绑定数据，进行验证
+
+用户去找到用户数据
+
+再去判断用户登录是否正确
+
+如果正确就验证密码，密码正确用user组件去登录
+
+再去为登录时间和登录IP赋值，保存数据
+
+返回视图
+
+在视图中和注册类似
+
+#### js跳转：
+```
+ window.location.href="/user/index";
+ ```
+ 做登录的时候因为用的同一个模型，所有写了一个类，使用了场景
+ ```
+   public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['login'] = ['password','username','code','rememberMe'];
+        $scenarios['reg'] = ['password_hash','username','rePassword','code','email','tel','$message'];
+        return $scenarios;
+    }
+```
+在规则里面需要的就'on'=>'reg'/'on'=>'login',不加on的就是通用。
+
+```
+//在控制器里面需要调用场景：
+$login->setScenario('login');
+```
+## 退出登录
+```
+  public function actionLogout(){
+        \yii::$app->user->logout();
+        return $this->redirect('login');
+    }
+```
 
