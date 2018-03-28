@@ -114,6 +114,7 @@ class AdminController extends CommenController
                   }
               } $model->addError('username','用户名或者状态被禁用');
           }else{
+
           }
       }
       return $this->render('login',compact('model'));

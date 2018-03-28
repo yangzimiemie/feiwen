@@ -21,7 +21,7 @@
 前台：首页、商品展示、商品购买、订单管理、在线支付等。
 后台：品牌管理、商品分类管理、商品管理、订单管理、系统管理和会员管理六个功能模块。
 ```
-## 完成的功能模块
+## 完成的后端功能模块
 - [x] 品牌管理：
 - [x] 文章管理：
 - [x] 商品分类管理：
@@ -29,7 +29,13 @@
 - [x]  账号管理：
 - [x]  权限管理：
 - [x]  菜单管理：
-- [ ] 订单管理：
+## 前端功能模块：
+- [x] 注册登录
+- [x] 收货地址
+- [ ]  商品展示
+- [ ] 商品购买
+- [ ] 订单管理
+- [ ] 在线支付
  
 **品牌功能模块第一天**
 
@@ -624,4 +630,81 @@ $login->setScenario('login');
         return $this->redirect('login');
     }
 ```
+## 收货地址
+1. #### 先分析需要的字段：
+```
+收货地址
+	id
+	name
+	省	
+	市
+	区
+	详细地址
+	电话
+	默认地址
+	用户id
+```
+2. 创建模型->规则、label
+3. 创建address控制器，添加一个添加地址的方法
+   重要的是要判断默认地址，如果设置了默认地址就要删除全部状态
+```
+  if ($model->status===null) {
+                    $model->status=0;
+                }else{
+                    Address::updateAll(['status'=>0,'user_id'=>$model->user_id]);
+                    $model->status=1;
+                }
+```
+4.三级联动
 
+pcas js 
+把js下载好赋值进来，然后在视图中添加三个省市区县name
+```
+ <select name="Address[province]" id="province"></select>
+      <select name="Address[city]" id="city"></select>
+      <select name="Address[county]"id="county"></select>
+      
+      //需要在js中  
+new PCAS("Address[province]","Address[city]","Address[county]");
+```
+
+#### 显示添加地址的数据：
+```
+<div class="address_hd">
+				<h3>收货地址薄</h3>
+                <?php
+                foreach ($address as $key=>$row):?>
+                    <dl class="last"> <!-- 最后一个dl 加类last -->
+                        <dt><?=$row->name?> <?=$row->province?> <?=$row->city?> <?=$row->county?><?=$row->address?> <?=$row->mobile?></dt>
+					<dd>
+						<a href="">修改</a>
+						<a href="javascript:void (0)" class="del" data_id="<?=$row->id?>">删除</a>
+						<a href="">设为默认地址</a>
+					</dd>
+				</dl>
+<?php endforeach;?>
+			</div>
+```
+#### 引入导航和头部/尾部的重复部分
+1. 在视图中创建一个公共的文件夹，在视图中写好三个部分的.php
+2. 导航：
+  ```
+    <li>您好，欢迎<?=!Yii::$app->user->isGuest?Yii::$app->user->identity->username:""?>来到菲纹商城！
+                    <?php
+                       $htmlGuest=<<<html
+                           [<a href="/user/login">登录</a>] [<a href="/user/reg">免费注册</a>]
+html;
+                       $htmlLogin=<<<html
+                      [<a href="/user/logout">注销</a>]
+html;
+
+                       if(Yii::$app->user->isGuest){
+                           echo $htmlGuest;
+                       }else{
+                           echo $htmlLogin;
+                       }
+
+                    ?>
+```
+3.页头：
+三重循环

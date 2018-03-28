@@ -35,15 +35,6 @@ class UserController extends \yii\web\Controller
     }
 
     /**
-     * 列表
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
-
-    /**
      * 注册
      * @return string
      */
@@ -87,7 +78,7 @@ class UserController extends \yii\web\Controller
            */
         //判断用户有没有登录
         if (!\yii::$app->user->isGuest) {
-            return $this->redirect('index');
+            return $this->redirect('/home/index');
         }
        $login = new User();
        $request = new Request();
