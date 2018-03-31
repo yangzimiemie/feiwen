@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="/style/bottomnav.css" type="text/css">
 	<link rel="stylesheet" href="/style/footer.css" type="text/css">
 
-	<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
 	<script type="text/javascript" src="/js/header.js"></script>
 	<script type="text/javascript" src="/js/home.js"></script>
 	<script type="text/javascript" src="/js/PCASClass.js"></script>
@@ -76,6 +76,7 @@
 			<div class="address_hd">
 				<h3>收货地址薄</h3>
                 <?php
+
                 foreach ($address as $key=>$row):?>
                     <dl class="last"> <!-- 最后一个dl 加类last -->
                         <dt><?=$row->name?> <?=$row->province?> <?=$row->city?> <?=$row->county?><?=$row->address?> <?=$row->mobile?></dt>
@@ -85,7 +86,7 @@
 						<a href="">设为默认地址</a>
 					</dd>
 				</dl>
-<?php endforeach;?>
+                <?php endforeach;?>
 			</div>
 
 			<div class="address_bd mt10">

@@ -2,7 +2,7 @@
 
 namespace backend\controllers;
 use yii\captcha\CaptchaAction;
-use app\models\ArticleCategory;
+use backend\models\ArticleCategory;
 use yii\data\Pagination;
 use yii\web\Request;
 

@@ -34,7 +34,7 @@
                 </dt>
                 <dd>
                     <div class="prompt">
-                        您好，<?=\Yii::$app->user->identity->username?></a>
+                        您好，</a>
                     </div>
                     <div class="uclist mt10">
                         <ul class="list1 fl">
@@ -70,7 +70,7 @@
         <div class="cart fl">
             <dl>
                 <dt>
-                    <a href="">去购物车结算</a>
+                    <a href="<?=\yii\helpers\Url::to(['goods/cart-list'])?>">去购物车结算</a>
                     <b></b>
                 </dt>
                 <dd>
@@ -107,15 +107,15 @@
                         ?>
                         <dl class="<?=$k2==0?"dl_1st":""?>">
                             <dt><a href="<?=\yii\helpers\Url::to(['home/list','id'=>$v2->id])?>"><?=$v2->name?></a></dt>
-                            <?php endforeach; ?>
                             <dd>
                                 <?php
                                 foreach (\backend\models\GoodsCate::find()->where(['parent_id'=>$v2->id])->all() as $k3=>$v3):
-                                    ?>
+                                 ?>
                                 <a href="<?=\yii\helpers\Url::to(['home/list','id'=>$v3->id])?>"><?=$v3->name?></a>
-                                <?php endforeach; ?>
+                                <?php endforeach;?>
                             </dd>
                         </dl>
+                    <?php endforeach; ?>
                     </div>
                 </div>
                 <?php endforeach;?>
@@ -126,7 +126,7 @@
 
         <div class="navitems fl">
             <ul class="fl">
-                <li class="current"><a href="">首页</a></li>
+                <li class="current"><a href="<?=\yii\helpers\Url::to(['home/index'])?>">首页</a></li>
                 <li><a href="">电脑频道</a></li>
                 <li><a href="">家用电器</a></li>
                 <li><a href="">品牌大全</a></li>

@@ -36,9 +36,7 @@ class CommenController extends Controller
             'upload' => [
                 'class' => 'kucha\ueditor\UEditorAction',
                 'config' => [
-                    "imageUrlPrefix"  => "http://www.baidu.com",//图片访问路径前缀
-                    "imagePathFormat" => "/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}", //上传保存路径
-                    "imageRoot" => \Yii::getAlias("@web"),
+                    "imageUrlPrefix"  => "http://admin.feiwen.com",//图片访问路径前缀
                 ],
             ],
         ];
@@ -108,12 +106,4 @@ class CommenController extends Controller
         return json_encode($correct);
     }
 
-//    public function behaviors()
-//    {
-//        return [
-//            'rbac'=>[
-//               'class'=>RbacFilter::className(),
-//            ],
-//        ];
-//   }
 }

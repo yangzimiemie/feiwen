@@ -2,8 +2,8 @@
 
 namespace backend\controllers;
 
-use app\models\ArticleCategory;
-use app\models\ArticleContent;
+use backend\models\ArticleCategory;
+use backend\models\ArticleContent;
 use backend\models\Article;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;

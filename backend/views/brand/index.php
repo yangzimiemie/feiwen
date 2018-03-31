@@ -7,7 +7,7 @@
         <td>品牌logo</td>
         <td>品牌排序</td>
         <td>品牌状态</td>
-        <td>品牌简介</td>
+
         <td>删除状态</td>
         <td>操作</td>
     </tr>
@@ -32,7 +32,7 @@
               echo  '<a class="btn btn-danger glyphicon glyphicon-remove"></a>';
             }
             ?></td>
-        <td><?=$row->detail?></td>
+
         <td><?php
             if($row->recycle){
                 ?>

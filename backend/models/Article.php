@@ -2,7 +2,7 @@
 
 namespace backend\models;
 
-use app\models\ArticleCategory;
+use backend\models\ArticleCategory;
 use Yii;
 
 /**
@@ -50,6 +50,7 @@ class Article extends \yii\db\ActiveRecord
     }
     //文章分类名一对一
     public function getCategory(){
+
         return $this->hasOne(ArticleCategory::className(),['id'=>'category_id']);
     }
 
