@@ -144,17 +144,17 @@ class GoodsController extends Controller
          * 用json格式返回
          */
         if (\Yii::$app->user->isGuest) {
-
             (new ShopCart())->del($id)->save();
-
         }else{
-            $goods = Cart::find()->where(['id'=>'goods_id'])->andWhere(['user_id'=>\Yii::$app->user->id])->one();
-            unset($goods['id']);
-         }
-        return Json::encode([
-            'status' => 1,
-            'msg' => '删除成功',
-        ]);
-    }
+            $userId = \Yii::$app->user->id;
+            $cart = Cart::findOne(['goods_id'=>$id,'user_id'=>$userId]);
+            $cart->delete();
+     }
 
+        $result = [
+          'status'=>1,
+            'msg'=>'删除成功',
+        ];
+        return Json::encode($result);
+    }
 }

@@ -48,6 +48,7 @@ class OrderController extends \yii\web\Controller
             $shopPrice += $row->price*$cart[$row->id];
             $shopNum += $cart[$row->id];
         }
+        $shopPrice = number_format($shopPrice,2);
         /**
          * 新增订单
          * 循环商品再去新增商品详情
@@ -152,6 +153,10 @@ class OrderController extends \yii\web\Controller
              }
          }
         return $this->render('index',compact('cart','good','address','deliverys','payments','shopNum','shopPrice'));
+    }
+
+    public function actionOrder(){
+        return $this->render('order');
     }
 
 }

@@ -105,7 +105,6 @@
 						</tr>
 						<?php endforeach;?>
 					</table>
-
 				</div>
 			</div>
 			<!-- 支付方式  end-->
@@ -139,12 +138,12 @@
 								<ul>
 									<li>
 										<span><?=$shopNum?>件商品，总商品金额：</span>
-                                        <em>￥<span id="goods_price"><?=number_format($shopPrice,2)?></span></em>
+                                        <em>￥<span id="goods_price"><?=$shopPrice?></span></em>
 									</li>
 
 									<li>
 										<span>运费：</span>
-                                        <em>￥<span id="price"><?=$deliverys[0]->price?></span></em>
+                                        <em>￥<span id="freight"><?=number_format($deliverys[0]->price,2)?></span></em>
 									</li>
 									<li>
 										<span>应付总额：</span>
@@ -204,14 +203,18 @@ $(function () {
      * 找到总价，更改总价，保留两位小数
       */
     $("input[name='delivery']").change(function () {
-       var price = $(this).parent().next().children();
-       $("#price").text(price);
+       var price = $(this).parent().next().children().text();
+       $("#freight").text(price);
         $(".total").text((parseFloat(price)+parseFloat($("#goods_price").text())).toFixed(2));
         console.dir(price);
     });
     $("#add").click(function () {
         $.post("index",$("form").serialize(),function (data) {
             console.log(data);
+            if(data.status){
+
+                window.location.href="/order/order";
+            }
         },'json');
     });
 });

@@ -11,7 +11,8 @@
 
 	<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="/js/cart1.js"></script>
-	
+	<script type="text/javascript" src="/layer/layer.js"></script>
+
 </head>
 <body>
 	<!-- 顶部导航 start -->
@@ -63,7 +64,7 @@
 						<a href="javascript:;" class="add_num"></a>
 					</td>
 					<td class="col5">￥<span><?=$good->price*$cart[$good->id]?></span></td>
-					<td class="col6"><a href="javascript:;">删除</a></td>
+					<td class="col6"><a href="javascript:;" class="del">删除</a></td>
 				</tr>
             <?php endforeach;?>
 			</tbody>
@@ -86,5 +87,23 @@
     include Yii::getAlias('@app'). "/views/common/foot.php";
     ?>
 	<!-- 底部版权 end -->
+    <script>
+    $(function () {
+        //先找到删除
+        $(".del").click(function () {
+            var del = $(this);
+            var id = del.attr('data-id');
+            //提交数据
+            $.getJSON("/goods/del?id="+id,function (data) {
+                //删除
+                if(data.status){
+                    layer.msg(data.msg);
+                    //父级的父级删除
+                    del.parent().parent().remove();
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>
