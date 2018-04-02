@@ -110,6 +110,7 @@ class GoodsController extends Controller
      * @param $amount
      */
     public function actionUpdate($id,$amount){
+
         /**
          * 设个cookie对象
          * new一个cookie对象
@@ -120,7 +121,7 @@ class GoodsController extends Controller
         if (\Yii::$app->user->isGuest) {
             (new ShopCart())->update($id, $amount)->save();
         }else{
-            $goods = Cart::find()->where(['id'=>'goods_id'])->andWhere(['user_id'=>\Yii::$app->user->id])->one();
+            $goods = Cart::findOne(['goods_id'=>$id,'user_id'=>\Yii::$app->user->id]);
             $goods->num = $amount;
             $goods->save();
         }
@@ -129,7 +130,6 @@ class GoodsController extends Controller
             'msg' => '修改成功',
         ]);
     }
-
     /**
      * 删除
      * @param $id

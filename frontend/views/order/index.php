@@ -38,7 +38,7 @@
 	<!-- 页面头部 end -->
 	
 	<div style="clear:both;"></div>
-
+<form>
 	<!-- 主体部分 start -->
 	<div class="fillin w990 bc mt15">
 		<div class="fillin_hd">
@@ -52,10 +52,12 @@
 				<div class="address_info">
 				<p>
                     <?php foreach ($address as $row):?>
-					<input type="radio" value="" checked="checked" name="address_id" id="checked"/><?=$row->name?>  <?=$row->mobile?>    <?=$row->province?>  <?=$row->city?>  <?=$row->county?>  <?=$row->address?> </p>
+					<input type="radio" value="<?=$row->id?>" <?=$row->status?"checked":""?> name="address_id" id="checked"/><?=$row->name?>  <?=$row->mobile?>    <?=$row->province?>  <?=$row->city?>  <?=$row->county?>  <?=$row->address?> </p>
 				<?php endforeach;?>
                 </div>
-			</div>
+                <a href="<?=\yii\helpers\Url::to(['address/index'])?>">添加地址</a>
+
+            </div>
 			<!-- 收货人信息  end-->
 
 			<!-- 配送方式 start -->
@@ -68,36 +70,19 @@
 							<tr>
 								<th class="col1">送货方式</th>
 								<th class="col2">运费</th>
-								<th class="col3">运费标准</th>
+								<th class="col3">简介</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="cur">	
-								<td>
-									<input type="radio" name="delivery" checked="checked" />普通快递送货上门
-									</select>
-								</td>
-								<td>￥10.00</td>
-								<td>每张订单不满499.00元,运费15.00元, 订单4...</td>
-							</tr>
-							<tr>
-								
-								<td><input type="radio" name="delivery" />特快专递</td>
-								<td>￥40.00</td>
-								<td>每张订单不满499.00元,运费40.00元, 订单4...</td>
-							</tr>
-							<tr>
-								
-								<td><input type="radio" name="delivery" />加急快递送货上门</td>
-								<td>￥40.00</td>
-								<td>每张订单不满499.00元,运费40.00元, 订单4...</td>
-							</tr>
-							<tr>
-
-								<td><input type="radio" name="delivery" />平邮</td>
-								<td>￥10.00</td>
-								<td>每张订单不满499.00元,运费15.00元, 订单4...</td>
-							</tr>
+                        <?php foreach ($deliverys as $k=>$delivery):?>
+                            <tr class="<?=$k?"":"cur"?>">
+                                <td>
+                                    <input type="radio" name="delivery" value="<?=$delivery->id?>" <?=$k==0?"checked":""?> /><?=$delivery->name?>
+                                </td>
+                                <td>￥<span><?=$delivery->price?></span></td>
+                                <td><?=$delivery->intro?></td>
+                            </tr>
+                        <?php endforeach;?>
 						</tbody>
 					</table>
 
@@ -109,26 +94,16 @@
 			<div class="pay">
 				<h3>支付方式</h3>
 				<div class="pay_info">
-					<p>货到付款</p>
+
 				</div>
 				<div class="pay_select ">
 					<table>
-						<tr class="cur">
-							<td class="col1"><input type="radio" name="pay" />货到付款</td>
-							<td class="col2">送货上门后再收款，支持现金、POS机刷卡、支票支付</td>
+                        <?php foreach ($payments as $k=>$payment):?>
+						<tr class="<?=$k?"":"cur"?>">
+							<td class="col1"><input type="radio" name="pay" value="<?=$payment->id?>" <?=$k==0?"checked":""?>/><?=$payment->name?></td>
+							<td class="col2"><?=$payment->intro?></td>
 						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />在线支付</td>
-							<td class="col2">即时到帐，支持绝大数银行借记卡及部分银行信用卡</td>
-						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />上门自提</td>
-							<td class="col2">自提时付款，支持现金、POS刷卡、支票支付</td>
-						</tr>
-						<tr>
-							<td class="col1"><input type="radio" name="pay" />邮局汇款</td>
-							<td class="col2">通过快钱平台收款 汇款后1-3个工作日到账</td>
-						</tr>
+						<?php endforeach;?>
 					</table>
 
 				</div>
@@ -163,17 +138,17 @@
 							<td colspan="5">
 								<ul>
 									<li>
-										<span><?=$cart[$good->id]?>件商品，总商品金额：</span>
-										<em>￥<?=$good->price*$cart[$good->id]?></em>
+										<span><?=$shopNum?>件商品，总商品金额：</span>
+                                        <em>￥<span id="goods_price"><?=number_format($shopPrice,2)?></span></em>
 									</li>
 
 									<li>
 										<span>运费：</span>
-										<em>￥10.00</em>
+                                        <em>￥<span id="price"><?=$deliverys[0]->price?></span></em>
 									</li>
 									<li>
 										<span>应付总额：</span>
-										<em>￥5076.00</em>
+                                        <em>￥<span class="total"><?=$deliverys[0]->price+$shopPrice?></span></em>
 									</li>
 								</ul>
 							</td>
@@ -186,13 +161,13 @@
 		</div>
 
 		<div class="fillin_ft">
-			<a href=""><span>提交订单</span></a>
-			<p>应付总额：<strong>￥5076.00元</strong></p>
+			<a href="javascript:;" id="add"><span>提交订单</span></a>
+			<p>应付总额：<strong><em>￥<span class="total"><?=$deliverys[0]->price+$shopPrice?></span></em></strong></p>
 			
 		</div>
 	</div>
+</form>
 	<!-- 主体部分 end -->
-
 	<div style="clear:both;"></div>
 	<!-- 底部版权 start -->
 	<div class="footer w1210 bc mt15">
@@ -220,18 +195,26 @@
 		</p>
 	</div>
 	<!-- 底部版权 end -->
-        <script>
-            $(function () {
-               $("#checked").click(function () {
-                   $.getJSON("/order/index",function (data) {
-                       if(data.status){
-                        style.checked=true
-                       }else{
-
-                       }
-                   })
-               }) ;
-            });
-        </script>
+<script>
+$(function () {
+    /**
+     * 找到他的父亲 改变事件
+     * 找到运费
+     * 获取运费 改变运费
+     * 找到总价，更改总价，保留两位小数
+      */
+    $("input[name='delivery']").change(function () {
+       var price = $(this).parent().next().children();
+       $("#price").text(price);
+        $(".total").text((parseFloat(price)+parseFloat($("#goods_price").text())).toFixed(2));
+        console.dir(price);
+    });
+    $("#add").click(function () {
+        $.post("index",$("form").serialize(),function (data) {
+            console.log(data);
+        },'json');
+    });
+});
+ </script>
 </body>
 </html>

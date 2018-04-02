@@ -23,31 +23,30 @@ class AddressController extends \yii\web\Controller
      * @return string
      */
     public function actionAdd(){
-        $address = Address::find()->where(['user_id'=>\Yii::$app->user->id])->all();
-        $model = new Address();
-        $request = \Yii::$app->request;
+      $request = \Yii::$app->request;
         if ($request->isPost) {
-           $model->load($request->post());
-            if ($model->validate()) {
-                $model->user_id=\Yii::$app->user->id;
-                if ($model->status===null) {
-                    $model->status=0;
+            $address = new Address();
+            $address->load($request->post());
+            if ($address->validate()) {
+                $address->user_id=\Yii::$app->user->id;
+//                var_dump($address->status);exit;
+                if ($address->status===null) {
+                    $address->status=0;
                 }else{
-                    Address::updateAll(['status'=>0,'user_id'=>$model->user_id]);
-                    $model->status=1;
+                    Address::updateAll(['status'=>0],['user_id'=>$address->user_id]);
+                    $address->status=1;
                 }
-                if ($model->save()) {
-                    $result = ['status'=>1,'data'=>$model->errors,'msg'=>'添加地址成功~'];
+                if ($address->save()) {
+                    $result = ['status'=>1,'msg'=>'添加地址成功~'];
                     return Json::encode($result);
                 }
             }else{
-                $result = ['status'=>0,'data'=>$model->errors,'msg'=>'添加地址失败~'];
+                $result = ['status'=>0,'msg'=>'添加地址失败~'];
                 return Json::encode($result);
             }
         }
-        return $this->render('index',compact('address'));
+//         return $this->render('index',compact('address'));
     }
-
     public function actionDel($id){
         if (Address::findOne(['id'=>$id,'user_id'=>\Yii::$app->user->id])->delete()) {
             $result = [

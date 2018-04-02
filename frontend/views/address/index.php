@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="/style/bottomnav.css" type="text/css">
 	<link rel="stylesheet" href="/style/footer.css" type="text/css">
 
-    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="/js/header.js"></script>
 	<script type="text/javascript" src="/js/home.js"></script>
 	<script type="text/javascript" src="/js/PCASClass.js"></script>
@@ -78,7 +78,7 @@
                 <?php
 
                 foreach ($address as $key=>$row):?>
-                    <dl class="last"> <!-- 最后一个dl 加类last -->
+                    <dl class="<?=$key==count($row)-1?"last":""?>"> <!-- 最后一个dl 加类last -->
                         <dt><?=$row->name?> <?=$row->province?> <?=$row->city?> <?=$row->county?><?=$row->address?> <?=$row->mobile?></dt>
 					<dd>
 						<a href="">修改</a>
@@ -198,11 +198,14 @@
         <?php
         include Yii::getAlias('@app'). "/views/common/foot.php";
         ?>
+        <script>
+            new PCAS("Address[province]","Address[city]","Address[county]");
+        </script>
 	<!-- 底部版权 end -->
 	 <script>
-             new PCAS("Address[province]","Address[city]","Address[county]");
+
              $(function () {
-                 /**
+               /**
                   * 先找到保存按钮,为它添加一个点击事件
                   * 发起ajax请求，判断状态
                   */
@@ -210,7 +213,7 @@
                      $.post('/address/add',$("#address_form").serialize(),function (data) {
                          console.dir(data);
                          if(data.status){
-                             window.location.href='/address/add';
+                             window.location.href='/address/index';
                          }else{
                              $.each(data.data,function (k,v){
                                  layer.tips(v[0], '#'+k, {

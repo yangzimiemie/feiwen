@@ -28,14 +28,6 @@ use Yii;
 class Order extends \yii\db\ActiveRecord
 {
 
-    public function rules()
-    {
-        return [
-            [[ 'name', 'province', 'city', 'county', 'address', 'mobile', 'mode',
-                'freight', 'no', 'amount', 'create_time', 'update_time', 'total'], 'required'],
-
-        ];
-    }
 
     /**
      * @inheritdoc
