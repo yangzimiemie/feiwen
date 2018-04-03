@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="/style/header.css" type="text/css">
 	<link rel="stylesheet" href="/style/fillin.css" type="text/css">
 	<link rel="stylesheet" href="/style/footer.css" type="text/css">
+
     <script type="text/javascript" src="/layer/layer.js"></script>
 	<script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="/js/cart2.js"></script>
@@ -210,10 +211,9 @@ $(function () {
     });
     $("#add").click(function () {
         $.post("index",$("form").serialize(),function (data) {
-            console.log(data);
+            console.debug(data);
             if(data.status){
-
-                window.location.href="/order/order";
+                location.href="/order/wx-pay?id="+data.id;
             }
         },'json');
     });
