@@ -80,9 +80,9 @@ class OrderController extends \yii\web\Controller
                  $payments = Payment::findOne($payId);
 
                  $orders->user_id = $userId;
-
+                 $orders->address_id = $addressId;
                  $orders->name = $address->name;
-
+//                 var_dump( $orders->address_id);exit;
                  $orders->province = $address->province;
                  $orders->city = $address->city;
                  $orders->county = $address->county;
@@ -117,6 +117,7 @@ class OrderController extends \yii\web\Controller
                   */
                  $orders->no = date("ymdHis").rand(1000,9999);
                  $orders->create_time = time();
+
                  if ($orders->save()) {
                      foreach ($good as $row){
                          $goods = Goods::findOne($row->id);
@@ -142,7 +143,8 @@ class OrderController extends \yii\web\Controller
                  $transaction->commit();//提交事务
                  $result = [
                      'status'=>1,
-                     'msg'=>'成功啦'
+                     'msg'=>'成功啦',
+                     'id'=>$orders->id,
                  ];
                  return Json::encode($result);
              } catch(Exception $e) {
@@ -212,7 +214,6 @@ class OrderController extends \yii\web\Controller
     });
     return $response;
 }
-
     public function actionTest($result){
         $qrCode = new QrCode($result);
         header('Content-Type: '.$qrCode->getContentType());
