@@ -7,6 +7,7 @@ use backend\models\Goods;
 use backend\models\OrderDetail;
 use backend\models\Payment;
 use EasyWeChat\Foundation\Application;
+use EasyWeChat\Js\Js;
 use frontend\models\Address;
 use frontend\models\Cart;
 use frontend\models\Order;
@@ -80,7 +81,6 @@ class OrderController extends \yii\web\Controller
                  $payments = Payment::findOne($payId);
 
                  $orders->user_id = $userId;
-                 $orders->address_id = $addressId;
                  $orders->name = $address->name;
 //                 var_dump( $orders->address_id);exit;
                  $orders->province = $address->province;
@@ -122,7 +122,7 @@ class OrderController extends \yii\web\Controller
                      foreach ($good as $row){
                          $goods = Goods::findOne($row->id);
                          if($cart[$row->id]>$goods->stock){
-                             throw new Exception("库存不足");
+                             throw new Exception("缺货");
                          }
                          $orderDetail = new OrderDetail();
                          $orderDetail->goods_id=$goods->id;
@@ -151,7 +151,8 @@ class OrderController extends \yii\web\Controller
                  $transaction->rollBack();
                  $result = [
                      'status'=>0,
-                     'msg'=>$e->getMessage()
+                     'msg'=>$e->getMessage(),
+                     'id'=>$orders->id,
                  ];
                  return Json::encode($result);
              }
@@ -174,7 +175,7 @@ class OrderController extends \yii\web\Controller
             'body'             => '666',
             'detail'           => '888',
             'out_trade_no'     => $orders->no,
-            'total_fee'        => $orders->total*100, // 单位：分
+            'total_fee'        => 1, // 单位：分
             'notify_url'       =>  Url::to(['order/notify'], true), // 支付结果通知网址，如果不设置则会使用配置里的默认地址
 //            'openid'           => '当前用户的 openid', // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识，
             // ...
@@ -187,7 +188,7 @@ class OrderController extends \yii\web\Controller
 //        var_dump($result);exit;
     return $this->render('order',compact('orders','result'));
   }
-   public function actionNotify(){
+    public function actionNotify(){
     $options = \Yii::$app->params['wx'];
     $app = new Application($options);
     $response = $app->payment->handleNotify(function($notify, $successful){
@@ -218,5 +219,43 @@ class OrderController extends \yii\web\Controller
         $qrCode = new QrCode($result);
         header('Content-Type: '.$qrCode->getContentType());
         echo  $qrCode->writeString();
+    }
+
+
+    public function actionStatus($id)
+    {
+        $orders = Order::findOne($id);
+//        var_dump($orders);exit;
+        $rst = [
+            'status'=>$orders->status,
+            'msg'=>'成功',
+            'id'=>$orders->id,
+        ];
+        return Json::encode($rst);
+    }
+
+    /**
+     * 超时订单
+     */
+    public function actionOrder(){
+        //找出超时的订单，设置十分钟后取消订单
+        $timeOrder = Order::find()->where(['status'=>1])->andWhere(["<","create_time",time()-600])->asArray()->all();
+//        var_dump($timeOrder);
+        $orderId = array_column($timeOrder,'id');
+//        var_dump($orderId);
+        Order::updateAll(['status'=>0],['id'=>$orderId]);//修改十分钟之类过期的订单
+        foreach ($timeOrder as $order){
+            $orderDetail = OrderDetail::find()->where(['id'=>$order->order_id])->all();
+            foreach ($orderDetail as $detail){
+                Order::updateAllCounters(['stock'=>$detail->num],['id'=>$detail->goods_id]);
+            }
+        }
+    }
+
+    public function actionDetail(){
+        $userId = \Yii::$app->user->id;
+        $detail = OrderDetail::find()->where(['user_id'=>$userId])->all();
+        $orders = Order::find()->where(['user_id'=>$userId])->all();
+        return $this->render('detail',compact('detail','orders'));
     }
 }

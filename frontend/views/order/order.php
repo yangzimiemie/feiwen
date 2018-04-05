@@ -8,6 +8,10 @@
 	<link rel="stylesheet" href="/style/header.css" type="text/css">
 	<link rel="stylesheet" href="/style/success.css" type="text/css">
 	<link rel="stylesheet" href="/style/footer.css" type="text/css">
+
+
+    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
 </head>
 <body>
 	<!-- 顶部导航 start -->
@@ -63,9 +67,19 @@
 	<div style="clear:both;"></div>
 	<!-- 底部版权 start -->
 
-    <script type="text/javascript">
-        document.execCommand("BackgroundImageCache", false, true);
-    </script>
 	<!-- 底部版权 end -->
+    <script>
+        setInterval("getStatus()",1000);
+          var id = <?=$orders->id?>;
+//          alert(id);
+          function getStatus(){
+            $.getJSON("/order/status?id="+id,function (data) {
+                if(data.status==2){
+                    layer.msg("支付成功");
+                    location.href="/order/detail?id="+data.id;
+                }
+            });
+        }
+ </script>
 </body>
 </html>
